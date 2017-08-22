@@ -2,6 +2,7 @@ package zioncosta.trabajopractico6;
 
 import android.nfc.tech.NfcA;
 import android.provider.Settings;
+import android.support.annotation.FloatRange;
 import android.util.Log;
 
 import org.cocos2d.actions.interval.MoveTo;
@@ -29,8 +30,9 @@ public class clsJuego
 {
    CCGLSurfaceView _VistaDelJuego;
    CCSize PantallaDelDevice;
-   Sprite NaveJugador;
-   Sprite NaveEnemiga;
+   Sprite Androidcito;
+   Float AlturaAndroidcito;
+   Float AnchuraAndroidcito;
    Sprite ImagenFondo;
    Label lblTituloJuego;
    
@@ -51,15 +53,15 @@ public class clsJuego
    {
 	  
 	  Scene EscenaADevolver = Scene.node();
-   
+	  
 	  CapaDeFondo MiCapaDeFondo = new CapaDeFondo();
-    
+	  
 	  CapaDeFrente MiCapaDeFrente = new CapaDeFrente();
-   
+	  
 	  EscenaADevolver.addChild(MiCapaDeFondo, -10);
-   
+	  
 	  EscenaADevolver.addChild(MiCapaDeFrente, 10);
-   
+	  
 	  return EscenaADevolver;
    }
    
@@ -88,46 +90,66 @@ public class clsJuego
    {
 	  public CapaDeFrente()
 	  {
-		 super.schedule("PonerNaveEnemiga", 2.0f);
-	   
-		 PonerEnPosicionInicial();
-	   
+		 super.schedule("PonerAndroid", 3.0f);
 		 PonerTituloJuego();
-	   
 	  }
 	  
-	  private void PonerEnPosicionInicial()
+	  public void PonerAndroid(float DiferenciaDeTiempo)
 	  {
-		 NaveJugador = Sprite.sprite("jugador.png");
-		 float PosicionInicialX, PosicionInicialY;
-		 PosicionInicialX = PantallaDelDevice.width / 2;
-		 PosicionInicialY = NaveJugador.getHeight() / 2;
-		 NaveJugador.setPosition(PosicionInicialX, PosicionInicialY);
-		 super.addChild(NaveJugador);
-	  }
-	  
-	  public void PonerNaveEnemiga(float DiferenciaDeTiempo)
-	  {
-		 NaveEnemiga = Sprite.sprite("zurg.png");
-		 int PosicionInicialX, PosicionInicialY;
-		 Float AlturaEnemigo = NaveEnemiga.getHeight();
-		 Float AnchuraEnemigo = NaveEnemiga.getWidth();
-		 
-		 PosicionInicialY = (int)(PantallaDelDevice.height + AlturaEnemigo / 2);
+		 Androidcito = Sprite.sprite("android.png");
+		 int PosicionX, PosicionY;
+		 AlturaAndroidcito = Androidcito.getHeight();
+		 AnchuraAndroidcito = Androidcito.getWidth();
 		 
 		 Random GeneradorDePosiciones = new Random();
-		 PosicionInicialX = GeneradorDePosiciones.nextInt((int) (PantallaDelDevice.width - AnchuraEnemigo));
-		 PosicionInicialX += AnchuraEnemigo / 2;
 		 
-		 NaveEnemiga.setPosition(PosicionInicialX, PosicionInicialY);
-		 NaveEnemiga.runAction(RotateTo.action(0.01f, 180));
+		 PosicionX = GeneradorDePosiciones.nextInt((int) (PantallaDelDevice.width - AnchuraAndroidcito));
+		 PosicionX += AnchuraAndroidcito / 2;
+		 PosicionY = GeneradorDePosiciones.nextInt((int) (PantallaDelDevice.height - AlturaAndroidcito));
+		 PosicionY += AlturaAndroidcito / 2;
 		 
-		 int PosicionFinalX, PosicionFinalY;
-		 PosicionFinalX = PosicionInicialX;
-		 PosicionFinalY =(int)  - AlturaEnemigo / 2;
+		 Androidcito.setPosition(PosicionX, PosicionY);
+		 Desplazamiento(PosicionX, PosicionY);
+		 super.addChild(Androidcito);
+	  }
+	  
+	  private void Desplazamiento(int PosicionX, int PosicionY)
+	  {
+		 Float PosicionFinalX, PosicionFinalY;
 		 
-		 NaveEnemiga.runAction(MoveTo.action(3, PosicionFinalX, PosicionFinalY));
-		 super.addChild(NaveEnemiga);
+		 if (PosicionX < PantallaDelDevice.width / 2)
+		 {
+			//Está en la parte izquierda
+			if (PosicionY < PantallaDelDevice.height / 2)
+			{
+			   //Está en la parte izquierda de abajo
+			   PosicionFinalX = PantallaDelDevice.width + AnchuraAndroidcito;
+			   PosicionFinalY = PantallaDelDevice.height + AlturaAndroidcito;
+			}
+			else
+			{
+			   //Está en la parte izquierda de arriba
+			   PosicionFinalX = PantallaDelDevice.width + AnchuraAndroidcito;
+			   PosicionFinalY = (float) 0;
+			}
+		 }
+		 else
+		 {
+			//Está en la parte derecha
+			if (PosicionY < PantallaDelDevice.height / 2)
+			{
+			   //Está en la parte derecha de abajo
+			   PosicionFinalX = (float) 0;
+			   PosicionFinalY = PantallaDelDevice.height + AlturaAndroidcito;
+			}
+			else
+			{
+			   //Está en la parte derecha de arriba
+			   PosicionFinalX = (float) 0 - AnchuraAndroidcito;
+			   PosicionFinalY = (float) 0 - AlturaAndroidcito;
+			}
+		 }
+		 Androidcito.runAction(MoveTo.action(1, PosicionFinalX, PosicionFinalY));
 	  }
 	  
 	  private void PonerTituloJuego()
